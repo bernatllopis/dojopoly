@@ -2,38 +2,193 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Dojopoly</title>
-
+    <title>Dojopoly - Proyecto Completo</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-    <h1 class="titulo">DOJOPOLY</h1>
+    <!-- ========================= -->
+    <!--        TABLERO           -->
+    <!-- ========================= -->
+    <div id="tablero"></div>
 
-    <div class="contenedor">
-
-        <!-- TABLERO -->
-        <canvas id="tablero"></canvas>
-
-        <!-- PANEL LATERAL -->
-        <div class="panel">
-            <h2 id="turno">Equipo 1</h2>
-
-            <button id="btnDado">Lanzar dado</button>
-
-            <p>Resultado: <span id="resultado">-</span></p>
-            <p>Posición: <span id="posicion">Casilla 1</span></p>
-
-            <h3>Monedas</h3>
-            <p>Oro: <span id="oro">0</span></p>
-            <p>Plata: <span id="plata">0</span></p>
-        </div>
-
+    <!-- ========================= -->
+    <!--   PANEL DEL JUGADOR      -->
+    <!-- ========================= -->
+    <div id="panelJugador">
+        <h2 id="nombreJugador">Jugador</h2>
+        <p>Monedas: <span id="monedasJugador">0</span></p>
+        <p>Racha: <span id="rachaJugador">0</span></p>
+        <button class="btn-rpg" onclick="abrirInventarioRPG(jugadorActual)">Inventario</button>
+        <button class="btn-rpg" onclick="abrirLogrosRPG(jugadorActual)">Logros</button>
+        <button class="btn-rpg" onclick="abrirMisionesRPG(jugadorActual)">Misiones</button>
     </div>
 
+    <!-- ========================= -->
+    <!--   POPUP DE PREGUNTAS     -->
+    <!-- ========================= -->
+    <div id="popupPregunta" class="oculto">
+        <div class="popup-contenido">
+            <h2 id="preguntaTexto"></h2>
+            <div id="opcionesPregunta"></div>
+        </div>
+    </div>
+
+    <!-- ========================= -->
+    <!--   POPUP DE CINEMÁTICAS   -->
+    <!-- ========================= -->
+    <div id="popupCinematica" class="oculto">
+        <div class="popup-contenido">
+            <p id="textoCinematica"></p>
+        </div>
+    </div>
+
+    <!-- ========================= -->
+    <!--   POPUP DE PIEZA GANADA  -->
+    <!-- ========================= -->
+    <div id="piezaPopup" class="oculto">
+        <div id="piezaIcono"></div>
+        <h2 id="piezaNombre"></h2>
+    </div>
+
+    <!-- ========================= -->
+    <!--   POPUP DE LOGRO         -->
+    <!-- ========================= -->
+    <div id="logroPopup" class="oculto">
+        <h2 id="logroTitulo"></h2>
+        <p id="logroDesc"></p>
+    </div>
+
+    <!-- ========================= -->
+    <!--   POPUP DE COFRE         -->
+    <!-- ========================= -->
+    <div id="cofrePopup" class="oculto">
+        <img src="img/cofre.png" class="cofre-img">
+        <h2>¡Cofre Sorpresa!</h2>
+        <p id="cofreResultado"></p>
+    </div>
+
+    <!-- ========================= -->
+    <!--   INVENTARIO RPG         -->
+    <!-- ========================= -->
+    <div id="pantallaInventarioRPG" class="oculto">
+        <div class="inventario-rpg-contenedor">
+            <h1 class="titulo-rpg">Inventario del Equipo</h1>
+
+            <div class="rpg-avatar">
+                <img id="rpgAvatarImg" src="img/avatar_default.png">
+                <p id="rpgNombreJugador"></p>
+            </div>
+
+            <div class="rpg-estadisticas">
+                <p>Monedas: <span id="rpgMonedas"></span></p>
+                <p>Racha: <span id="rpgRacha"></span></p>
+                <p>Logros: <span id="rpgLogros"></span></p>
+            </div>
+
+            <div class="rpg-items">
+                <div class="rpg-item" id="rpg-cpu"></div>
+                <div class="rpg-item" id="rpg-ram"></div>
+                <div class="rpg-item" id="rpg-gpu"></div>
+                <div class="rpg-item" id="rpg-ssd"></div>
+                <div class="rpg-item" id="rpg-placa"></div>
+                <div class="rpg-item" id="rpg-fuente"></div>
+            </div>
+
+            <button id="cerrarInventarioRPG" class="btn-rpg">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- ========================= -->
+    <!--   PANTALLA DE LOGROS RPG -->
+    <!-- ========================= -->
+    <div id="pantallaLogrosRPG" class="oculto">
+        <h1 class="titulo-rpg">Logros del Jugador</h1>
+        <div id="listaLogrosRPG" class="logros-grid"></div>
+        <button id="cerrarLogrosRPG" class="btn-rpg">Cerrar</button>
+    </div>
+
+    <!-- ========================= -->
+    <!--   PANTALLA DE MISIONES   -->
+    <!-- ========================= -->
+    <div id="pantallaMisionesRPG" class="oculto">
+        <h1 class="titulo-rpg">Misiones</h1>
+        <div id="listaMisionesRPG" class="misiones-grid"></div>
+        <button id="cerrarMisionesRPG" class="btn-rpg">Cerrar</button>
+    </div>
+
+    <!-- ========================= -->
+    <!--   PANTALLA DE COMERCIO   -->
+    <!-- ========================= -->
+    <div id="pantallaComercio" class="oculto">
+        <div class="comercio-contenedor">
+            <h1 class="titulo-rpg">Comercio entre Equipos</h1>
+
+            <div class="comercio-equipos">
+                <div class="equipo-panel">
+                    <h2 id="nombreEquipoA"></h2>
+                    <div id="itemsEquipoA" class="items-comercio"></div>
+                </div>
+
+                <div class="equipo-panel">
+                    <h2 id="nombreEquipoB"></h2>
+                    <div id="itemsEquipoB" class="items-comercio"></div>
+                </div>
+            </div>
+
+            <div class="oferta-panel">
+                <h3>Oferta de intercambio</h3>
+                <p id="textoOferta"></p>
+                <button id="btnAceptarOferta" class="btn-rpg">Aceptar</button>
+                <button id="btnRechazarOferta" class="btn-rpg">Rechazar</button>
+            </div>
+
+            <button id="cerrarComercio" class="btn-rpg">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- ========================= -->
+    <!--   PANTALLA DE VICTORIA   -->
+    <!-- ========================= -->
+    <div id="pantallaVictoria" class="oculto">
+        <div class="victoria-contenedor">
+            <h1 id="victoriaTitulo">¡Victoria!</h1>
+            <img id="victoriaAvatar" src="img/avatar_default.png" class="victoria-avatar">
+            <p id="victoriaMensaje"></p>
+            <button id="btnCerrarVictoria" class="btn-rpg">Volver al menú</button>
+        </div>
+    </div>
+
+    <!-- ========================= -->
+    <!--   SONIDOS GLOBALES       -->
+    <!-- ========================= -->
+    <audio id="snd-clic" src="sonidos/clic.mp3"></audio>
+    <audio id="snd-mover" src="sonidos/mover.mp3"></audio>
+    <audio id="snd-victoria" src="sonidos/victoria_epica.mp3"></audio>
+    <audio id="snd-error" src="sonidos/error.mp3"></audio>
+    <audio id="snd-cofre" src="sonidos/cofre.mp3"></audio>
+    <audio id="snd-logro" src="sonidos/logro.mp3"></audio>
+
+    <!-- Sonidos de piezas -->
+    <audio id="sonido-cpu" src="sonidos/cpu.mp3"></audio>
+    <audio id="sonido-ram" src="sonidos/ram.mp3"></audio>
+    <audio id="sonido-gpu" src="sonidos/gpu.mp3"></audio>
+    <audio id="sonido-ssd" src="sonidos/ssd.mp3"></audio>
+    <audio id="sonido-placa" src="sonidos/placa.mp3"></audio>
+    <audio id="sonido-fuente" src="sonidos/fuente.mp3"></audio>
+
+    <!-- ========================= -->
+    <!--   ARCHIVOS JS PRINCIPALES -->
+    <!-- ========================= -->
+    <script src="preguntas.js"></script>
+    <script src="efectos.js"></script>
+    <script src="inventario.js"></script>
+    <script src="logros.js"></script>
+    <script src="misiones.js"></script>
+    <script src="historia.js"></script>
+    <script src="comercio.js"></script>
+    <script src="victoria.js"></script>
     <script src="game.js"></script>
 
 </body>
