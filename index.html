@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dojopoly</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <h1 class="titulo">DOJOPOLY</h1>
+
+    <div class="contenedor">
+        <canvas id="tablero" width="800" height="800"></canvas>
+
+        <div class="panel">
+            <h2>Turno: <span id="turno">Equipo 1</span></h2>
+
+            <button id="btnDado">Lanzar dado</button>
+
+            <p>Resultado: <span id="resultado">-</span></p>
+            <p>Posición: <span id="posicion">Casilla 1</span></p>
+
+            <h3>Monedas</h3>
+            <p>Oro: <span id="oro">0</span></p>
+            <p>Plata: <span id="plata">0</span></p>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
