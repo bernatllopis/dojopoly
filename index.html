@@ -3,19 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Dojopoly</title>
+
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
     <h1 class="titulo">DOJOPOLY</h1>
 
     <div class="contenedor">
+
+        <!-- TABLERO -->
         <canvas id="tablero"></canvas>
 
-
+        <!-- PANEL LATERAL -->
         <div class="panel">
-            <h2>Turno: <span id="turno">Equipo 1</span></h2>
+            <h2 id="turno">Equipo 1</h2>
 
             <button id="btnDado">Lanzar dado</button>
 
@@ -26,8 +31,10 @@
             <p>Oro: <span id="oro">0</span></p>
             <p>Plata: <span id="plata">0</span></p>
         </div>
+
     </div>
 
     <script src="game.js"></script>
+
 </body>
 </html>
