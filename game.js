@@ -113,15 +113,27 @@ function moverFichaPasos(pasosRestantes) {
         return;
     }
 
+    // Avanzar casilla
     posicion++;
     if (posicion > casillas.length) posicion = 1;
 
     const destino = casillas[posicion - 1];
 
     moverSuave(destino.x, destino.y, () => {
+
+        // SNAP DEFINITIVO: fijar posición EXACTA al terminar
+        fichaX = destino.x;
+        fichaY = destino.y;
+
+        // Redibujar ya con la posición exacta
+        ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
+        dibujarFicha();
+
+        // Continuar con el siguiente paso
         moverFichaPasos(pasosRestantes - 1);
     });
 }
+
 
 // ===============================
 // BOTÓN DADO
