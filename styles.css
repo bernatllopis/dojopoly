@@ -1,74 +1,14 @@
 /* ============================================================
-   ESTILOS GENERALES
+   ESTILO GENERAL
 ============================================================ */
 
 body {
-    margin: 0;
-    padding: 0;
     background: #111;
     color: white;
     font-family: Arial, sans-serif;
-    overflow-x: hidden;
-}
-
-.oculto {
-    display: none;
-}
-
-.btn-rpg {
-    background: #4a148c;
-    color: white;
-    padding: 10px 18px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin: 5px;
-    font-weight: bold;
-    transition: 0.2s;
-}
-
-.btn-rpg:hover {
-    background: #7b1fa2;
-}
-
-/* ============================================================
-   TABLERO ESTILO MONOPOLY
-============================================================ */
-
-#tablero {
-    width: 700px;
-    height: 700px;
-    margin: 120px auto 40px auto; /* <-- AÑADIDO: margen superior */
-    display: grid;
-    grid-template-columns: repeat(11, 1fr);
-    grid-template-rows: repeat(11, 1fr);
-    background: #111;
-    border: 4px solid #555;
-    position: relative;
-}
-
-
-.casilla {
-    border: 1px solid #333;
-    background: #222;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 12px;
-    color: #bbb;
-}
-
-.casilla.esquina {
-    background: #333;
-    font-weight: bold;
-}
-
-.jugador-ficha {
-    width: 20px;
-    height: 20px;
-    background: gold;
-    border-radius: 50%;
-    border: 2px solid white;
+    margin: 0;
+    padding: 0;
+    text-align: center;
 }
 
 /* ============================================================
@@ -83,384 +23,227 @@ body {
     padding: 15px;
     border-radius: 10px;
     border: 2px solid #555;
-    width: 200px;
+    width: 180px;
+    z-index: 1000;
 }
 
-/* ============================================================
-   POPUP DE PREGUNTAS
-============================================================ */
-
-#popupPregunta {
-    position: fixed;
-    top: 0;
-    left: 0;
+.btn-rpg {
     width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#popupPregunta .popup-contenido {
-    background: #222;
-    padding: 20px;
-    border-radius: 10px;
-    width: 60%;
-    text-align: center;
-}
-
-#opcionesPregunta button {
-    display: block;
-    width: 100%;
-    margin: 8px 0;
-    padding: 10px;
-    background: #333;
-    border: 1px solid #555;
+    margin-top: 5px;
+    padding: 8px;
+    background: #444;
+    border: 1px solid #777;
     color: white;
     cursor: pointer;
-    border-radius: 6px;
 }
 
-#opcionesPregunta button:hover {
-    background: #555;
+.btn-rpg:hover {
+    background: #666;
 }
 
 /* ============================================================
-   POPUP DE CINEMÁTICAS
+   TABLERO
 ============================================================ */
 
-#popupCinematica {
+#tablero {
+    width: 700px;
+    height: 700px;
+    margin: 140px auto 40px auto;
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    grid-template-rows: repeat(11, 1fr);
+    background: #111;
+    border: 6px solid #fff;
+    position: relative;
+}
+
+/* ============================================================
+   CASILLAS
+============================================================ */
+
+.casilla {
+    border: 2px solid #444;
+    background: #1e1e1e;
+    color: white;
+    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 2px;
+    position: relative;
+}
+
+/* Nombre de la casilla */
+.casilla-nombre {
+    z-index: 5;
+    font-size: 10px;
+    text-align: center;
+    width: 100%;
+    background: rgba(0,0,0,0.6);
+    padding: 2px 0;
+}
+
+/* Imagen de la casilla */
+.casilla img {
+    width: 80%;
+    height: 70%;
+    object-fit: contain;
+    position: absolute;
+    top: 5%;
+}
+
+/* Esquinas */
+.casilla.esquina {
+    background: #333;
+    border: 3px solid #fff;
+    font-weight: bold;
+}
+
+/* ============================================================
+   COLORES POR CATEGORÍA
+============================================================ */
+
+.casilla.programacion {
+    background: #1e3a8a;
+    border-color: #3b82f6;
+}
+
+.casilla.hardware {
+    background: #14532d;
+    border-color: #22c55e;
+}
+
+.casilla.web {
+    background: #854d0e;
+    border-color: #facc15;
+}
+
+.casilla.famosos {
+    background: #581c87;
+    border-color: #c084fc;
+}
+
+.casilla.especial {
+    background: #7f1d1d;
+    border-color: #f87171;
+}
+
+/* ============================================================
+   FICHA DEL JUGADOR
+============================================================ */
+
+.jugador-ficha {
+    width: 18px;
+    height: 18px;
+    background: gold;
+    border-radius: 50%;
+    border: 2px solid white;
+    z-index: 10;
+}
+
+/* ============================================================
+   LOGO CENTRAL DEL TABLERO
+============================================================ */
+
+#logoCentral {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 45%;
+    height: 45%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: 1;
+}
+
+#logoCentral img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ============================================================
+   POPUPS
+============================================================ */
+
+.oculto {
+    display: none;
+}
+
+#popupPregunta,
+#popupCinematica,
+#piezaPopup,
+#logroPopup,
+#cofrePopup {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.85);
+    background: rgba(0,0,0,0.8);
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 2000;
+    cursor: pointer;
 }
 
-#popupCinematica .popup-contenido {
+.popup-contenido {
     background: #222;
     padding: 25px;
     border-radius: 10px;
     width: 50%;
     text-align: center;
     font-size: 20px;
-}
-/* Permitir cerrar la cinemática haciendo clic en cualquier parte */
-#popupCinematica {
-    cursor: pointer;
-}
-
-#popupCinematica .popup-contenido {
     pointer-events: none;
 }
 
 /* ============================================================
-   POPUP DE PIEZA GANADA
+   PANTALLAS RPG
 ============================================================ */
 
-#piezaPopup {
-    position: fixed;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    background: #222;
-    padding: 20px;
-    border-radius: 10px;
-    border: 3px solid #7b1fa2;
-    text-align: center;
-    transition: 0.3s;
-}
-
-#piezaPopup.activo {
-    transform: translate(-50%, -50%) scale(1);
-}
-
-#piezaIcono {
-    width: 80px;
-    height: 80px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin: auto;
-}
-
-/* ============================================================
-   POPUP DE LOGRO
-============================================================ */
-
-#logroPopup {
-    position: fixed;
-    top: 20px;
-    right: -300px;
-    background: #4a148c;
-    padding: 15px;
-    border-radius: 10px;
-    width: 250px;
-    transition: 0.4s;
-}
-
-#logroPopup.activo {
-    right: 20px;
-}
-
-/* ============================================================
-   POPUP DE COFRE
-============================================================ */
-
-#cofrePopup {
-    position: fixed;
-    top: 30%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    background: #222;
-    padding: 20px;
-    border-radius: 10px;
-    border: 3px solid gold;
-    text-align: center;
-    transition: 0.3s;
-}
-
-#cofrePopup.activo {
-    transform: translate(-50%, -50%) scale(1);
-}
-
-.cofre-img {
-    width: 120px;
-}
-
-/* ============================================================
-   INVENTARIO RPG
-============================================================ */
-
-#pantallaInventarioRPG {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.85);
-    display: none;
-    justify-content: center;
-    align-items: center;
-}
-
-#pantallaInventarioRPG.activo {
-    display: flex;
-}
-
-.inventario-rpg-contenedor {
-    background: #222;
-    padding: 25px;
-    border-radius: 10px;
-    width: 60%;
-    text-align: center;
-}
-
-.rpg-items {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.rpg-item {
-    width: 100px;
-    height: 100px;
-    background: #333;
-    border: 2px solid #555;
-    border-radius: 10px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.rpg-item.activo {
-    border-color: gold;
-}
-
-/* ============================================================
-   LOGROS RPG
-============================================================ */
-
-#pantallaLogrosRPG {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.85);
-    display: none;
-    justify-content: center;
-    align-items: center;
-}
-
-#pantallaLogrosRPG.activo {
-    display: flex;
-}
-
-.logros-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-}
-
-.logro-rpg {
-    background: #333;
-    padding: 15px;
-    border-radius: 10px;
-    border: 2px solid #555;
-}
-
-.logro-rpg.desbloqueado {
-    border-color: gold;
-}
-
-/* ============================================================
-   MISIONES RPG
-============================================================ */
-
-#pantallaMisionesRPG {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.85);
-    display: none;
-    justify-content: center;
-    align-items: center;
-}
-
-#pantallaMisionesRPG.activo {
-    display: flex;
-}
-
-.misiones-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-}
-
-.mision-rpg {
-    background: #333;
-    padding: 15px;
-    border-radius: 10px;
-    border: 2px solid #555;
-}
-
-.mision-rpg.completada {
-    border-color: lime;
-}
-
-/* ============================================================
-   COMERCIO
-============================================================ */
-
-#pantallaComercio {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.85);
-    display: none;
-    justify-content: center;
-    align-items: center;
-}
-
-#pantallaComercio.activo {
-    display: flex;
-}
-
-.items-comercio {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-}
-
-.item-comercio {
-    width: 80px;
-    height: 80px;
-    background: #333;
-    border: 2px solid #555;
-    border-radius: 10px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    cursor: pointer;
-}
-
-.item-comercio.seleccionado {
-    border-color: gold;
-}
-
-/* ============================================================
-   PANTALLA DE VICTORIA
-============================================================ */
-
+#pantallaInventarioRPG,
+#pantallaLogrosRPG,
+#pantallaMisionesRPG,
+#pantallaComercio,
 #pantallaVictoria {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.85);
-    display: none;
+    background: rgba(0,0,0,0.9);
+    display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 3000;
 }
 
-#pantallaVictoria.activo {
-    display: flex;
-}
-
+.inventario-rpg-contenedor,
+.comercio-contenedor,
 .victoria-contenedor {
     background: #222;
-    padding: 25px;
+    padding: 20px;
     border-radius: 10px;
-    text-align: center;
+    width: 60%;
 }
 
-.victoria-avatar {
-    width: 120px;
-    border-radius: 10px;
+.rpg-item {
+    width: 80px;
+    height: 80px;
+    background: #333;
+    border: 2px solid #555;
+    margin: 5px;
 }
 
-/* ============================================================
-   PARTÍCULAS
-============================================================ */
-
-.particula {
-    position: fixed;
-    width: 8px;
-    height: 8px;
-    background: gold;
-    border-radius: 50%;
-    animation: particulaAnim 0.8s forwards;
-}
-
-@keyframes particulaAnim {
-    from { transform: translate(0,0); opacity: 1; }
-    to { transform: translate(var(--dx), var(--dy)); opacity: 0; }
-}
-
-/* ============================================================
-   CONFETI
-============================================================ */
-
-.confeti {
-    position: fixed;
-    top: -10px;
-    width: 10px;
-    height: 10px;
-    animation: caerConfeti linear forwards;
-}
-
-@keyframes caerConfeti {
-    from { transform: translateY(0); }
-    to { transform: translateY(110vh); }
+.logros-grid,
+.misiones-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
 }
