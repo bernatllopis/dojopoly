@@ -8,21 +8,19 @@ const ctx = canvas.getContext("2d");
 // Ajustar canvas al tamaño visible (responsive)
 function ajustarCanvas() {
     const rect = canvas.getBoundingClientRect();
+
+    // Ajustar tamaño interno del canvas al tamaño visible
     canvas.width = rect.width;
-    canvas.height = rect.width; // cuadrado
-}
-ajustarCanvas();
+    canvas.height = rect.width; // cuadrado perfecto
 
-window.addEventListener("resize", () => {
-    ajustarCanvas();
-    ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
-    dibujarFicha();
-});
-
-// Escalar coordenadas desde 800px al tamaño actual
-function escalar(valor) {
-    return valor * (canvas.width / 800);
+    // Redibujar tablero y ficha
+    if (tablero.complete) {
+        ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
+        dibujarFicha();
+    }
 }
+
+window.addEventListener("resize", ajustarCanvas);
 
 // ===============================
 // TABLERO
@@ -31,7 +29,11 @@ function escalar(valor) {
 const tablero = new Image();
 tablero.src = "tablero.png";
 
-// Coordenadas reales de las 40 casillas
+tablero.onload = () => {
+    ajustarCanvas();
+};
+
+// Coordenadas reales de las 40 casillas (tablero 800x800)
 const casillas = [
     {x: 720, y: 720}, {x: 630, y: 720}, {x: 560, y: 720}, {x: 490, y: 720},
     {x: 420, y: 720}, {x: 350, y: 720}, {x: 280, y: 720}, {x: 210, y: 720},
@@ -52,17 +54,24 @@ const casillas = [
 ];
 
 // ===============================
+// ESCALADO
+// ===============================
+
+function escalar(valor) {
+    return valor * (canvas.width / 800);
+}
+
+// ===============================
 // FICHA
 // ===============================
 
 let posicion = 1;
 let turno = 1;
 
-// Posición real de la ficha (en coordenadas del tablero original)
 let fichaX = casillas[0].x;
 let fichaY = casillas[0].y;
 
-let velocidad = 6; // píxeles por frame
+let velocidad = 6;
 
 function dibujarFicha() {
     ctx.beginPath();
@@ -81,7 +90,7 @@ function moverSuave(destinoX, destinoY, callback) {
         const dy = destinoY - fichaY;
         const distancia = Math.sqrt(dx*dx + dy*dy);
 
-        // SNAP final para evitar quedarse entre casillas
+        // SNAP final
         if (distancia < velocidad) {
             fichaX = destinoX;
             fichaY = destinoY;
@@ -93,7 +102,6 @@ function moverSuave(destinoX, destinoY, callback) {
             return;
         }
 
-        // Movimiento suave
         fichaX += (dx / distancia) * velocidad;
         fichaY += (dy / distancia) * velocidad;
 
@@ -113,7 +121,6 @@ function moverFichaPasos(pasosRestantes) {
         return;
     }
 
-    // Avanzar casilla
     posicion++;
     if (posicion > casillas.length) posicion = 1;
 
@@ -121,19 +128,16 @@ function moverFichaPasos(pasosRestantes) {
 
     moverSuave(destino.x, destino.y, () => {
 
-        // SNAP DEFINITIVO: fijar posición EXACTA al terminar
+        // SNAP definitivo
         fichaX = destino.x;
         fichaY = destino.y;
 
-        // Redibujar ya con la posición exacta
         ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
         dibujarFicha();
 
-        // Continuar con el siguiente paso
         moverFichaPasos(pasosRestantes - 1);
     });
 }
-
 
 // ===============================
 // BOTÓN DADO
@@ -151,12 +155,3 @@ document.getElementById("btnDado").addEventListener("click", () => {
 
     moverFichaPasos(resultado);
 });
-
-// ===============================
-// DIBUJAR TABLERO AL CARGAR
-// ===============================
-
-tablero.onload = () => {
-    ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
-    dibujarFicha();
-};
