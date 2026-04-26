@@ -8,13 +8,19 @@ function moverSuave(destinoX, destinoY, callback) {
         const dy = destinoY - fichaY;
         const distancia = Math.sqrt(dx*dx + dy*dy);
 
-        if (distancia < 5) {
+        // Si está muy cerca, la colocamos EXACTAMENTE en la casilla
+        if (distancia < velocidad) {
             fichaX = destinoX;
             fichaY = destinoY;
+
+            ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
+            dibujarFicha();
+
             callback();
             return;
         }
 
+        // Movimiento suave
         fichaX += (dx / distancia) * velocidad;
         fichaY += (dy / distancia) * velocidad;
 
