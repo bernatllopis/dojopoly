@@ -9,16 +9,24 @@ const ctx = canvas.getContext("2d");
 function ajustarCanvas() {
     const rect = canvas.getBoundingClientRect();
 
-    // Ajustar tamaño interno del canvas al tamaño visible
-    canvas.width = rect.width;
-    canvas.height = rect.width; // cuadrado perfecto
+    // Ancho visible del canvas
+    const ancho = rect.width;
 
-    // Redibujar tablero y ficha
+    // Alto máximo disponible en pantalla (75% de la pantalla)
+    const altoPantalla = window.innerHeight * 0.75;
+
+    // El tablero es cuadrado, así que usamos el menor valor
+    const lado = Math.min(ancho, altoPantalla);
+
+    canvas.width = lado;
+    canvas.height = lado;
+
     if (tablero.complete) {
         ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
         dibujarFicha();
     }
 }
+
 
 window.addEventListener("resize", ajustarCanvas);
 
