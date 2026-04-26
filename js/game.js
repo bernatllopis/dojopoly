@@ -1,44 +1,19 @@
 /* ============================================================
    SISTEMA PRINCIPAL DEL JUEGO - Dojopoly
-   ============================================================ */
+============================================================ */
 
 /* ------------------------------------------------------------
-   VARIABLES GLOBALES
+   VARIABLES GENERALES
 ------------------------------------------------------------ */
 
 let jugadores = [];
 let jugadorActual = null;
 let turno = 0;
 
-const casillas = {
-    3: { tipo: "tema", categoria: "robots" },
-    7: { tipo: "tema", categoria: "videojuegos" },
-    12: { tipo: "tema", categoria: "internet" },
-    18: { tipo: "tema", categoria: "ia" },
-    22: { tipo: "cofre" },
-    30: { tipo: "jefe" },
-    35: { tipo: "inventario" },
-    40: { tipo: "victoria" }
-};
+const totalCasillas = 30;
 
 /* ------------------------------------------------------------
-   INICIALIZACIÓN DEL JUEGO
------------------------------------------------------------- */
-
-function iniciarJuego() {
-    jugadores = [
-        crearJugador("Equipo 1", "img/avatar_default.png"),
-        crearJugador("Equipo 2", "img/avatar_default.png")
-    ];
-
-    jugadorActual = jugadores[0];
-
-    actualizarPanelJugador();
-    iniciarCapitulo(jugadorActual);
-}
-
-/* ------------------------------------------------------------
-   CREAR JUGADOR
+   INICIALIZAR JUGADORES
 ------------------------------------------------------------ */
 
 function crearJugador(nombre, avatar) {
@@ -48,7 +23,6 @@ function crearJugador(nombre, avatar) {
         posicion: 0,
         monedas: 0,
         racha: 0,
-        piezas: [],
         inventario: {
             cpu: false,
             ram: false,
@@ -57,11 +31,29 @@ function crearJugador(nombre, avatar) {
             placa: false,
             fuente: false
         },
+        piezas: [],
         logros: [],
         misiones: [],
-        casillasMovidas: 0,
-        campania: { capituloActual: 1 }
+        campania: {
+            capituloActual: 1
+        },
+        derrotoJefe: false,
+        nivel: "facil"
     };
+}
+
+function iniciarJuego() {
+    jugadores = [
+        crearJugador("Equipo 1", "img/avatar_default.png"),
+        crearJugador("Equipo 2", "img/avatar_default.png")
+    ];
+
+    jugadorActual = jugadores[0];
+
+    jugadores.forEach(j => inicializarMisiones(j));
+
+    actualizarPanelJugador();
+    iniciarCapitulo(jugadorActual);
 }
 
 /* ------------------------------------------------------------
@@ -75,64 +67,53 @@ function actualizarPanelJugador() {
 }
 
 /* ------------------------------------------------------------
-   TIRAR DADO Y MOVER
+   CAMBIAR DE TURNO
 ------------------------------------------------------------ */
 
-function tirarDado() {
-    const dado = Math.floor(Math.random() * 6) + 1;
-    moverJugador(dado);
-}
-
-function moverJugador(pasos) {
-    playSound("mover");
-
-    jugadorActual.posicion += pasos;
-    jugadorActual.casillasMovidas += pasos;
-
-    if (jugadorActual.posicion > 40) jugadorActual.posicion -= 40;
-
-    comprobarMision(jugadorActual, "mover10");
-
-    procesarCasilla(jugadorActual.posicion);
+function siguienteTurno() {
+    turno++;
+    jugadorActual = jugadores[turno % jugadores.length];
+    actualizarPanelJugador();
 }
 
 /* ------------------------------------------------------------
-   PROCESAR CASILLA
+   MOVER JUGADOR
 ------------------------------------------------------------ */
 
-function procesarCasilla(num) {
-    const casilla = casillas[num];
+function moverJugador(casillas) {
+    playSound("mover");
 
-    if (!casilla) {
-        mostrarPreguntaNormal();
+    jugadorActual.posicion += casillas;
+
+    if (jugadorActual.posicion >= totalCasillas) {
+        jugadorActual.posicion = totalCasillas;
+        mostrarVictoria(jugadorActual);
         return;
     }
 
-    switch (casilla.tipo) {
-        case "tema":
-            mostrarPreguntaTematica(casilla.categoria);
-            break;
+    completarMision(jugadorActual, "mover10");
 
-        case "cofre":
-            abrirCofre(jugadorActual);
-            break;
+    comprobarCasillaEspecial();
+}
 
-        case "jefe":
-            iniciarModoJefe(jugadorActual, preguntaModoJefe());
-            break;
+/* ------------------------------------------------------------
+   CASILLAS ESPECIALES
+------------------------------------------------------------ */
 
-        case "inventario":
-            abrirInventarioRPG(jugadorActual);
-            break;
+function comprobarCasillaEspecial() {
+    const pos = jugadorActual.posicion;
 
-        case "victoria":
-            mostrarVictoria(jugadorActual);
-            break;
-
-        default:
-            mostrarPreguntaNormal();
-            break;
+    if (pos % 5 === 0) {
+        abrirCofre(jugadorActual);
+        return;
     }
+
+    if (pos === 30) {
+        iniciarJefeFinal();
+        return;
+    }
+
+    mostrarPreguntaNormal();
 }
 
 /* ------------------------------------------------------------
@@ -141,37 +122,31 @@ function procesarCasilla(num) {
 
 function mostrarPreguntaNormal() {
     const pregunta = obtenerPreguntaSegunNivel(jugadorActual);
-    mostrarPregunta(pregunta);
+
+    if (pregunta.tipo === "jefe") {
+        iniciarJefeFinal();
+        return;
+    }
+
+    mostrarPopupPregunta(pregunta);
 }
 
 /* ------------------------------------------------------------
-   PREGUNTAS TEMÁTICAS
+   MOSTRAR POPUP DE PREGUNTA
 ------------------------------------------------------------ */
 
-function mostrarPreguntaTematica(cat) {
-    const pregunta = preguntaAleatoria(cat);
-    mostrarPregunta(pregunta);
-}
-
-/* ------------------------------------------------------------
-   MOSTRAR PREGUNTA EN POPUP
------------------------------------------------------------- */
-
-function mostrarPregunta(pregunta) {
+function mostrarPopupPregunta(p) {
     const popup = document.getElementById("popupPregunta");
     const texto = document.getElementById("preguntaTexto");
     const opciones = document.getElementById("opcionesPregunta");
 
-    texto.textContent = pregunta.pregunta;
+    texto.textContent = p.pregunta;
     opciones.innerHTML = "";
 
-    pregunta.opciones.forEach((op, i) => {
+    p.opciones.forEach((op, i) => {
         const btn = document.createElement("button");
-        btn.classList.add("btn-rpg");
         btn.textContent = op;
-
-        btn.onclick = () => responderPregunta(i === pregunta.correcta);
-
+        btn.onclick = () => responderPregunta(p, i);
         opciones.appendChild(btn);
     });
 
@@ -179,20 +154,27 @@ function mostrarPregunta(pregunta) {
 }
 
 /* ------------------------------------------------------------
-   RESPONDER PREGUNTA
+   RESPONDER PREGUNTA NORMAL
 ------------------------------------------------------------ */
 
-function responderPregunta(correcto) {
+function responderPregunta(p, indice) {
     document.getElementById("popupPregunta").classList.add("oculto");
 
-    if (correcto) {
+    if (indice === p.correcta) {
         jugadorActual.racha++;
         jugadorActual.monedas += 5;
+        playSound("clic");
 
-        playSound("logro");
+        if (jugadorActual.racha === 5) {
+            desbloquearLogro(jugadorActual, "racha5");
+        }
 
-        if (jugadorActual.racha === 3) completarMision(jugadorActual, "racha3");
-        if (jugadorActual.racha === 5) desbloquearLogro(jugadorActual, "racha5");
+        // 30% de ganar pieza
+        if (Math.random() < 0.3) {
+            const piezas = ["cpu", "ram", "gpu", "ssd", "placa", "fuente"];
+            const pieza = piezas[Math.floor(Math.random() * piezas.length)];
+            ganarPieza(jugadorActual, pieza);
+        }
 
     } else {
         jugadorActual.racha = 0;
@@ -205,21 +187,51 @@ function responderPregunta(correcto) {
 }
 
 /* ------------------------------------------------------------
-   SIGUIENTE TURNO
+   MODO JEFE FINAL
 ------------------------------------------------------------ */
 
-function siguienteTurno() {
-    turno++;
-    jugadorActual = jugadores[turno % jugadores.length];
-    actualizarPanelJugador();
+function iniciarJefeFinal() {
+    const jefe = preguntaModoJefe();
+    mostrarPreguntaJefe(jefe);
 }
 
-/* ------------------------------------------------------------
-   INICIAR COMERCIO ENTRE EQUIPOS
------------------------------------------------------------- */
+function mostrarPreguntaJefe(jefe) {
+    const popup = document.getElementById("popupPregunta");
+    const texto = document.getElementById("preguntaTexto");
+    const opciones = document.getElementById("opcionesPregunta");
 
-function iniciarComercio() {
-    abrirComercio(jugadores[0], jugadores[1]);
+    let index = 0;
+
+    function siguientePregunta() {
+        if (index >= jefe.preguntas.length) {
+            jefeDerrotado(jugadorActual);
+            document.getElementById("popupPregunta").classList.add("oculto");
+            return;
+        }
+
+        const p = jefe.preguntas[index];
+        texto.textContent = p.pregunta;
+        opciones.innerHTML = "";
+
+        p.opciones.forEach((op, i) => {
+            const btn = document.createElement("button");
+            btn.textContent = op;
+            btn.onclick = () => {
+                if (i === p.correcta) {
+                    index++;
+                    siguientePregunta();
+                } else {
+                    playSound("error");
+                    document.getElementById("popupPregunta").classList.add("oculto");
+                    siguienteTurno();
+                }
+            };
+            opciones.appendChild(btn);
+        });
+    }
+
+    popup.classList.remove("oculto");
+    siguientePregunta();
 }
 
 /* ------------------------------------------------------------
