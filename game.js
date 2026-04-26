@@ -67,6 +67,27 @@ function dibujarFicha() {
 }
 
 
+function moverFichaPasos(pasosRestantes) {
+    if (pasosRestantes === 0) {
+        // Cuando termina de moverse, cambiar turno
+        turno = turno === 1 ? 2 : 1;
+        document.getElementById("turno").textContent = "Equipo " + turno;
+        return;
+    }
+
+    // Avanzar una casilla
+    posicion++;
+    if (posicion > casillas.length) posicion = 1;
+
+    // Redibujar tablero y ficha
+    ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
+    dibujarFicha();
+
+    // Esperar y mover el siguiente paso
+    setTimeout(() => moverFichaPasos(pasosRestantes - 1), 150);
+}
+
+
 tablero.onload = () => {
     ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
     dibujarFicha();
@@ -79,17 +100,15 @@ let posicion = 1;
 document.getElementById("btnDado").addEventListener("click", () => {
     const resultado = Math.floor(Math.random() * 6) + 1;
 
-    posicion += resultado;
-    if (posicion > casillas.length) posicion = 1;
-
     document.getElementById("resultado").textContent = resultado;
-    document.getElementById("posicion").textContent = "Casilla " + posicion;
 
-    turno = turno === 1 ? 2 : 1;
-    document.getElementById("turno").textContent = "Equipo " + turno;
+    // Mostrar casilla destino
+    let destino = posicion + resultado;
+    if (destino > casillas.length) destino -= casillas.length;
+    document.getElementById("posicion").textContent = "Casilla " + destino;
 
-    // Redibujar tablero + ficha
-    ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
-    dibujarFicha();
+    // Iniciar animación
+    moverFichaPasos(resultado);
 });
+
 
