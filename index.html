@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dojopoly Digital</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="game-container">
+    <div id="board-wrapper">
+      <img id="board" src="tablero.png" alt="Tablero Dojopoly" />
+      <div id="player-token"></div>
+    </div>
+
+    <div id="sidebar">
+      <h1>Dojopoly</h1>
+
+      <div class="panel">
+        <h2>Turno</h2>
+        <p id="turn-info">Equipo 1</p>
+      </div>
+
+      <div class="panel">
+        <h2>Dado</h2>
+        <button id="roll-dice">Lanzar dado</button>
+        <p>Resultado: <span id="dice-result">-</span></p>
+      </div>
+
+      <div class="panel">
+        <h2>Posición</h2>
+        <p>Casilla: <span id="position-display">1</span></p>
+      </div>
+
+      <div class="panel">
+        <h2>Monedas</h2>
+        <p>Oro: <span id="gold-coins">0</span></p>
+        <p>Plata: <span id="silver-coins">0</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="card-modal" class="hidden">
+    <div id="card">
+      <h2 id="card-type"></h2>
+      <p id="card-content"></p>
+
+      <div id="card-options" class="hidden">
+        <button class="option-btn" data-option="A" id="optionA"></button>
+        <button class="option-btn" data-option="B" id="optionB"></button>
+        <button class="option-btn" data-option="C" id="optionC"></button>
+      </div>
+
+      <div id="card-actions">
+        <button id="card-ok">Aceptar</button>
+      </div>
+
+      <p id="card-feedback"></p>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
