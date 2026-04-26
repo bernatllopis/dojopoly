@@ -1,3 +1,33 @@
+let fichaX = 720;
+let fichaY = 720;
+let velocidad = 5; // píxeles por frame
+
+function moverSuave(destinoX, destinoY, callback) {
+    function animar() {
+        const dx = destinoX - fichaX;
+        const dy = destinoY - fichaY;
+        const distancia = Math.sqrt(dx*dx + dy*dy);
+
+        if (distancia < 5) {
+            fichaX = destinoX;
+            fichaY = destinoY;
+            callback();
+            return;
+        }
+
+        fichaX += (dx / distancia) * velocidad;
+        fichaY += (dy / distancia) * velocidad;
+
+        ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
+        dibujarFicha();
+
+        requestAnimationFrame(animar);
+    }
+
+    animar();
+}
+
+
 const canvas = document.getElementById("tablero");
 const ctx = canvas.getContext("2d");
 
@@ -59,33 +89,20 @@ const casillas = [
 
 
 function dibujarFicha() {
-    const pos = casillas[posicion - 1];
     ctx.beginPath();
-    ctx.arc(pos.x, pos.y, 15, 0, Math.PI * 2);
+    ctx.arc(fichaX, fichaY, 15, 0, Math.PI * 2);
     ctx.fillStyle = "red";
     ctx.fill();
 }
 
 
-function moverFichaPasos(pasosRestantes) {
-    if (pasosRestantes === 0) {
-        // Cuando termina de moverse, cambiar turno
-        turno = turno === 1 ? 2 : 1;
-        document.getElementById("turno").textContent = "Equipo " + turno;
-        return;
-    }
-
-    // Avanzar una casilla
-    posicion++;
-    if (posicion > casillas.length) posicion = 1;
-
-    // Redibujar tablero y ficha
-    ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
-    dibujarFicha();
-
-    // Esperar y mover el siguiente paso
-    setTimeout(() => moverFichaPasos(pasosRestantes - 1), 150);
+function dibujarFicha() {
+    ctx.beginPath();
+    ctx.arc(fichaX, fichaY, 15, 0, Math.PI * 2);
+    ctx.fillStyle = "red";
+    ctx.fill();
 }
+
 
 
 tablero.onload = () => {
