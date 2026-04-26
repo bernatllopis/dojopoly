@@ -1,106 +1,229 @@
-// ===============================
-// CONFIGURACIÓN INICIAL
-// ===============================
+/* ============================================================
+   SISTEMA PRINCIPAL DEL JUEGO - Dojopoly
+   ============================================================ */
 
-const canvas = document.getElementById("tablero");
-const ctx = canvas.getContext("2d");
+/* ------------------------------------------------------------
+   VARIABLES GLOBALES
+------------------------------------------------------------ */
 
-// Ajustar canvas al tamaño visible (responsive)
-function ajustarCanvas() {
-    const rect = canvas.getBoundingClientRect();
+let jugadores = [];
+let jugadorActual = null;
+let turno = 0;
 
-    // Ancho visible del canvas
-    const ancho = rect.width;
+const casillas = {
+    3: { tipo: "tema", categoria: "robots" },
+    7: { tipo: "tema", categoria: "videojuegos" },
+    12: { tipo: "tema", categoria: "internet" },
+    18: { tipo: "tema", categoria: "ia" },
+    22: { tipo: "cofre" },
+    30: { tipo: "jefe" },
+    35: { tipo: "inventario" },
+    40: { tipo: "victoria" }
+};
 
-    // Alto máximo disponible en pantalla (75% de la pantalla)
-    const altoPantalla = window.innerHeight * 0.75;
+/* ------------------------------------------------------------
+   INICIALIZACIÓN DEL JUEGO
+------------------------------------------------------------ */
 
-    // El tablero es cuadrado, así que usamos el menor valor
-    const lado = Math.min(ancho, altoPantalla);
+function iniciarJuego() {
+    jugadores = [
+        crearJugador("Equipo 1", "img/avatar_default.png"),
+        crearJugador("Equipo 2", "img/avatar_default.png")
+    ];
 
-    canvas.width = lado;
-    canvas.height = lado;
+    jugadorActual = jugadores[0];
 
-    if (tablero.complete) {
-        ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
-        dibujarFichas();
+    actualizarPanelJugador();
+    iniciarCapitulo(jugadorActual);
+}
+
+/* ------------------------------------------------------------
+   CREAR JUGADOR
+------------------------------------------------------------ */
+
+function crearJugador(nombre, avatar) {
+    return {
+        nombre,
+        avatar,
+        posicion: 0,
+        monedas: 0,
+        racha: 0,
+        piezas: [],
+        inventario: {
+            cpu: false,
+            ram: false,
+            gpu: false,
+            ssd: false,
+            placa: false,
+            fuente: false
+        },
+        logros: [],
+        misiones: [],
+        casillasMovidas: 0,
+        campania: { capituloActual: 1 }
+    };
+}
+
+/* ------------------------------------------------------------
+   ACTUALIZAR PANEL DEL JUGADOR
+------------------------------------------------------------ */
+
+function actualizarPanelJugador() {
+    document.getElementById("nombreJugador").textContent = jugadorActual.nombre;
+    document.getElementById("monedasJugador").textContent = jugadorActual.monedas;
+    document.getElementById("rachaJugador").textContent = jugadorActual.racha;
+}
+
+/* ------------------------------------------------------------
+   TIRAR DADO Y MOVER
+------------------------------------------------------------ */
+
+function tirarDado() {
+    const dado = Math.floor(Math.random() * 6) + 1;
+    moverJugador(dado);
+}
+
+function moverJugador(pasos) {
+    playSound("mover");
+
+    jugadorActual.posicion += pasos;
+    jugadorActual.casillasMovidas += pasos;
+
+    if (jugadorActual.posicion > 40) jugadorActual.posicion -= 40;
+
+    comprobarMision(jugadorActual, "mover10");
+
+    procesarCasilla(jugadorActual.posicion);
+}
+
+/* ------------------------------------------------------------
+   PROCESAR CASILLA
+------------------------------------------------------------ */
+
+function procesarCasilla(num) {
+    const casilla = casillas[num];
+
+    if (!casilla) {
+        mostrarPreguntaNormal();
+        return;
+    }
+
+    switch (casilla.tipo) {
+        case "tema":
+            mostrarPreguntaTematica(casilla.categoria);
+            break;
+
+        case "cofre":
+            abrirCofre(jugadorActual);
+            break;
+
+        case "jefe":
+            iniciarModoJefe(jugadorActual, preguntaModoJefe());
+            break;
+
+        case "inventario":
+            abrirInventarioRPG(jugadorActual);
+            break;
+
+        case "victoria":
+            mostrarVictoria(jugadorActual);
+            break;
+
+        default:
+            mostrarPreguntaNormal();
+            break;
     }
 }
 
-window.addEventListener("resize", ajustarCanvas);
+/* ------------------------------------------------------------
+   PREGUNTAS NORMALES
+------------------------------------------------------------ */
 
-// ===============================
-// TABLERO
-// ===============================
-
-const tablero = new Image();
-tablero.src = "tablero.png";
-
-tablero.onload = () => {
-    ajustarCanvas();
-};
-
-// Coordenadas reales de las 40 casillas (tablero 800x800)
-const casillas = [
-    {x: 720, y: 720}, {x: 630, y: 720}, {x: 560, y: 720}, {x: 490, y: 720},
-    {x: 420, y: 720}, {x: 350, y: 720}, {x: 280, y: 720}, {x: 210, y: 720},
-    {x: 140, y: 720}, {x: 70,  y: 720},
-
-    {x: 70,  y: 630}, {x: 70,  y: 560}, {x: 70,  y: 490}, {x: 70,  y: 420},
-    {x: 70,  y: 350}, {x: 70,  y: 280}, {x: 70,  y: 210}, {x: 70,  y: 140},
-    {x: 70,  y: 70},
-
-    {x: 140, y: 70}, {x: 210, y: 70}, {x: 280, y: 70}, {x: 350, y: 70},
-    {x: 420, y: 70}, {x: 490, y: 70}, {x: 560, y: 70}, {x: 630, y: 70},
-    {x: 720, y: 70},
-
-    {x: 720, y: 140}, {x: 720, y: 210}, {x: 720, y: 280}, {x: 720, y: 350},
-    {x: 720, y: 420}, {x: 720, y: 490}, {x: 720, y: 560}, {x: 720, y: 630},
-
-    {x: 720, y: 700}, {x: 720, y: 720}, {x: 720, y: 720}, {x: 720, y: 720}
-];
-
-// ===============================
-// ESCALADO
-// ===============================
-
-function escalar(valor) {
-    return valor * (canvas.width / 800);
+function mostrarPreguntaNormal() {
+    const pregunta = obtenerPreguntaSegunNivel(jugadorActual);
+    mostrarPregunta(pregunta);
 }
 
-// ===============================
-// FICHAS PERSONALIZADAS
-// ===============================
+/* ------------------------------------------------------------
+   PREGUNTAS TEMÁTICAS
+------------------------------------------------------------ */
 
-const imagenesFichas = [
-    new Image(),
-    new Image(),
-    new Image(),
-    new Image()
-];
+function mostrarPreguntaTematica(cat) {
+    const pregunta = preguntaAleatoria(cat);
+    mostrarPregunta(pregunta);
+}
 
-imagenesFichas[0].src = "ficha1.png";
-imagenesFichas[1].src = "ficha2.png";
-imagenesFichas[2].src = "ficha3.png";
-imagenesFichas[3].src = "ficha4.png";
+/* ------------------------------------------------------------
+   MOSTRAR PREGUNTA EN POPUP
+------------------------------------------------------------ */
 
-// ===============================
-// JUGADORES
-// ===============================
+function mostrarPregunta(pregunta) {
+    const popup = document.getElementById("popupPregunta");
+    const texto = document.getElementById("preguntaTexto");
+    const opciones = document.getElementById("opcionesPregunta");
 
-let jugadores = [
-    { nombre: "Equipo 1", posicion: 1, oro: 0, plata: 0, ficha: 0 },
-    { nombre: "Equipo 2", posicion: 1, oro: 0, plata: 0, ficha: 1 },
-    { nombre: "Equipo 3", posicion: 1, oro: 0, plata: 0, ficha: 2 },
-    { nombre: "Equipo 4", posicion: 1, oro: 0, plata: 0, ficha: 3 }
-];
+    texto.textContent = pregunta.pregunta;
+    opciones.innerHTML = "";
 
-let turno = 0; // índice del jugador actual
+    pregunta.opciones.forEach((op, i) => {
+        const btn = document.createElement("button");
+        btn.classList.add("btn-rpg");
+        btn.textContent = op;
 
-// ===============================
-// DIBUJAR FICHAS
-// ===============================
+        btn.onclick = () => responderPregunta(i === pregunta.correcta);
 
-function dibujarFichas() {
-    jugadores.forEach(j => {
-        const casilla = casillas[j
+        opciones.appendChild(btn);
+    });
+
+    popup.classList.remove("oculto");
+}
+
+/* ------------------------------------------------------------
+   RESPONDER PREGUNTA
+------------------------------------------------------------ */
+
+function responderPregunta(correcto) {
+    document.getElementById("popupPregunta").classList.add("oculto");
+
+    if (correcto) {
+        jugadorActual.racha++;
+        jugadorActual.monedas += 5;
+
+        playSound("logro");
+
+        if (jugadorActual.racha === 3) completarMision(jugadorActual, "racha3");
+        if (jugadorActual.racha === 5) desbloquearLogro(jugadorActual, "racha5");
+
+    } else {
+        jugadorActual.racha = 0;
+        playSound("error");
+    }
+
+    actualizarPanelJugador();
+    comprobarCapitulo(jugadorActual);
+    siguienteTurno();
+}
+
+/* ------------------------------------------------------------
+   SIGUIENTE TURNO
+------------------------------------------------------------ */
+
+function siguienteTurno() {
+    turno++;
+    jugadorActual = jugadores[turno % jugadores.length];
+    actualizarPanelJugador();
+}
+
+/* ------------------------------------------------------------
+   INICIAR COMERCIO ENTRE EQUIPOS
+------------------------------------------------------------ */
+
+function iniciarComercio() {
+    abrirComercio(jugadores[0], jugadores[1]);
+}
+
+/* ------------------------------------------------------------
+   INICIAR JUEGO AUTOMÁTICAMENTE
+------------------------------------------------------------ */
+
+window.onload = iniciarJuego;
