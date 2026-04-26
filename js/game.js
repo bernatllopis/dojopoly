@@ -10,7 +10,7 @@ let jugadores = [];
 let jugadorActual = null;
 let turno = 0;
 
-const totalCasillas = 40; // 40 casillas estilo Monopoly
+const totalCasillas = 40; // 10 por lado
 
 /* ------------------------------------------------------------
    CREAR JUGADOR
@@ -73,7 +73,7 @@ function actualizarPanelJugador() {
 }
 
 /* ============================================================
-   TABLERO ESTILO MONOPOLY
+   TABLERO EXACTO COMO EL FÍSICO (SALIDA ABAJO IZQUIERDA)
 ============================================================ */
 
 function crearTablero() {
@@ -82,17 +82,25 @@ function crearTablero() {
 
     const posiciones = [];
 
-    // Top row (0 → 10)
-    for (let i = 0; i < 11; i++) posiciones.push({ fila: 0, col: i });
+    // LADO INFERIOR (0 → 9) — izquierda a derecha
+    for (let col = 0; col < 10; col++) {
+        posiciones.push({ fila: 10, col: col });
+    }
 
-    // Right column (1 → 10)
-    for (let i = 1; i < 11; i++) posiciones.push({ fila: i, col: 10 });
+    // LADO DERECHO (10 → 19) — abajo a arriba
+    for (let fila = 10; fila > 0; fila--) {
+        posiciones.push({ fila: fila, col: 10 });
+    }
 
-    // Bottom row (9 → 0)
-    for (let i = 9; i >= 0; i--) posiciones.push({ fila: 10, col: i });
+    // LADO SUPERIOR (20 → 29) — derecha a izquierda
+    for (let col = 10; col > 0; col--) {
+        posiciones.push({ fila: 0, col: col });
+    }
 
-    // Left column (9 → 1)
-    for (let i = 9; i >= 1; i--) posiciones.push({ fila: i, col: 0 });
+    // LADO IZQUIERDO (30 → 39) — arriba a abajo
+    for (let fila = 0; fila < 10; fila++) {
+        posiciones.push({ fila: fila, col: 0 });
+    }
 
     posiciones.forEach((pos, index) => {
         const c = document.createElement("div");
@@ -268,4 +276,29 @@ function mostrarPreguntaJefe(jefe) {
         texto.textContent = p.pregunta;
         opciones.innerHTML = "";
 
-        p.opciones.forEach
+        p.opciones.forEach((op, i) => {
+            const btn = document.createElement("button");
+            btn.textContent = op;
+            btn.onclick = () => {
+                if (i === p.correcta) {
+                    index++;
+                    siguientePregunta();
+                } else {
+                    playSound("error");
+                    document.getElementById("popupPregunta").classList.add("oculto");
+                    siguienteTurno();
+                }
+            };
+            opciones.appendChild(btn);
+        });
+    }
+
+    popup.classList.remove("oculto");
+    siguientePregunta();
+}
+
+/* ============================================================
+   INICIAR AUTOMÁTICAMENTE
+============================================================ */
+
+window.onload = iniciarJuego;
