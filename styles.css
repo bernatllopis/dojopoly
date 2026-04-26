@@ -1,0 +1,30 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+}
+
+.titulo {
+    margin-bottom: 20px;
+}
+
+.contenedor {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+#tablero {
+    border: 3px solid #333;
+    background: white;
+}
+
+.panel {
+    width: 200px;
+    padding: 15px;
+    background: #ffffff;
+    border: 2px solid #333;
+    border-radius: 10px;
+}
