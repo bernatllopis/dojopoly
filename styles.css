@@ -149,6 +149,14 @@ body {
     text-align: center;
     font-size: 20px;
 }
+/* Permitir cerrar la cinemática haciendo clic en cualquier parte */
+#popupCinematica {
+    cursor: pointer;
+}
+
+#popupCinematica .popup-contenido {
+    pointer-events: none;
+}
 
 /* ============================================================
    POPUP DE PIEZA GANADA
