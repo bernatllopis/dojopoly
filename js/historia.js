@@ -1,43 +1,18 @@
 /* ============================================================
-   MODO HISTORIA / CAMPAÑA - Dojopoly
-   ============================================================ */
+   SISTEMA DE HISTORIA / CAMPAÑA
+============================================================ */
 
 /* ------------------------------------------------------------
-   DEFINICIÓN DE CAPÍTULOS
+   TEXTOS DE LOS CAPÍTULOS
 ------------------------------------------------------------ */
 
-const HISTORIA = [
-    {
-        id: 1,
-        titulo: "El Sistema en Peligro",
-        texto: "Un misterioso virus ha corrompido el ordenador maestro. Tu misión es recuperar las piezas esenciales para restaurarlo.",
-        objetivo: "conseguir1" // conseguir 1 pieza
-    },
-    {
-        id: 2,
-        titulo: "Amenaza en la Red",
-        texto: "El virus se expande por la red. Necesitas reunir más piezas para frenar su avance.",
-        objetivo: "conseguir3" // conseguir 3 piezas
-    },
-    {
-        id: 3,
-        titulo: "El Núcleo Corrupto",
-        texto: "El núcleo del sistema está dañado. Solo un equipo con 5 piezas podrá acceder al núcleo.",
-        objetivo: "conseguir5"
-    },
-    {
-        id: 4,
-        titulo: "El Enfrentamiento Final",
-        texto: "Has llegado al corazón del sistema. Enfréntate al virus en un combate de preguntas de alto nivel.",
-        objetivo: "jefe" // modo jefe final
-    },
-    {
-        id: 5,
-        titulo: "Sistema Restaurado",
-        texto: "Has derrotado al virus y restaurado el ordenador maestro. ¡El sistema vuelve a estar a salvo!",
-        objetivo: "victoria"
-    }
-];
+const capitulosHistoria = {
+    1: "El Sistema en Peligro: Un misterioso virus ha corrompido el ordenador maestro. Tu misión es recuperar las piezas esenciales para restaurarlo.",
+    2: "Avance Crítico: Has recuperado varias piezas, pero el virus evoluciona. Nuevos desafíos aparecen en el sistema.",
+    3: "Alerta Roja: El núcleo del sistema está comprometido. Solo los equipos más preparados podrán continuar.",
+    4: "Cuenta Atrás Final: El virus ha tomado control del procesador central. Prepárate para el enfrentamiento definitivo.",
+    5: "Victoria Inminente: Estás a un paso de restaurar el sistema. El jefe final te espera."
+};
 
 /* ------------------------------------------------------------
    MOSTRAR CINEMÁTICA
@@ -49,12 +24,6 @@ function mostrarCinematica(texto) {
 
     contenido.textContent = texto;
     popup.classList.remove("oculto");
-
-    playSound("clic");
-
-    setTimeout(() => {
-        popup.classList.add("oculto");
-    }, 4000);
 }
 
 /* ------------------------------------------------------------
@@ -62,78 +31,46 @@ function mostrarCinematica(texto) {
 ------------------------------------------------------------ */
 
 function iniciarCapitulo(jugador) {
-    const cap = HISTORIA.find(c => c.id === jugador.campania.capituloActual);
-    if (!cap) return;
+    const cap = jugador.campania.capituloActual;
+    const texto = capitulosHistoria[cap];
 
-    mostrarCinematica(`${cap.titulo}: ${cap.texto}`);
+    if (texto) {
+        mostrarCinematica(texto);
+    }
 }
 
 /* ------------------------------------------------------------
-   COMPROBAR SI EL JUGADOR AVANZA DE CAPÍTULO
+   AVANZAR CAPÍTULO
 ------------------------------------------------------------ */
 
 function comprobarCapitulo(jugador) {
-    const cap = HISTORIA.find(c => c.id === jugador.campania.capituloActual);
-    if (!cap) return;
-
     const piezas = Object.values(jugador.inventario).filter(v => v).length;
 
-    switch (cap.objetivo) {
+    if (piezas >= 2 && jugador.campania.capituloActual === 1) {
+        jugador.campania.capituloActual = 2;
+        mostrarCinematica(capitulosHistoria[2]);
+    }
 
-        case "conseguir1":
-            if (piezas >= 1) avanzarCapitulo(jugador);
-            break;
+    if (piezas >= 4 && jugador.campania.capituloActual === 2) {
+        jugador.campania.capituloActual = 3;
+        mostrarCinematica(capitulosHistoria[3]);
+    }
 
-        case "conseguir3":
-            if (piezas >= 3) avanzarCapitulo(jugador);
-            break;
+    if (piezas >= 5 && jugador.campania.capituloActual === 3) {
+        jugador.campania.capituloActual = 4;
+        mostrarCinematica(capitulosHistoria[4]);
+    }
 
-        case "conseguir5":
-            if (piezas >= 5) avanzarCapitulo(jugador);
-            break;
-
-        case "jefe":
-            // El jefe se activa en la casilla 30, pero aquí comprobamos si ya lo derrotó
-            if (jugador.derrotoJefe) avanzarCapitulo(jugador);
-            break;
-
-        case "victoria":
-            mostrarVictoria(jugador);
-            break;
+    if (piezas === 6 && jugador.campania.capituloActual === 4) {
+        jugador.campania.capituloActual = 5;
+        mostrarCinematica(capitulosHistoria[5]);
     }
 }
 
 /* ------------------------------------------------------------
-   AVANZAR AL SIGUIENTE CAPÍTULO
+   CERRAR CINEMÁTICA (IMPORTANTE PARA QUE SE VEA EL TABLERO)
 ------------------------------------------------------------ */
 
-function avanzarCapitulo(jugador) {
-    jugador.campania.capituloActual++;
-
-    const nuevoCap = HISTORIA.find(c => c.id === jugador.campania.capituloActual);
-
-    if (nuevoCap) {
-        mostrarCinematica(`${nuevoCap.titulo}: ${nuevoCap.texto}`);
-    }
-
-    // Logro por avanzar en la historia
-    if (jugador.campania.capituloActual === 3) {
-        desbloquearLogro(jugador, "historiaAvanzada");
-    }
-
-    // Si llega al final, activar victoria
-    if (jugador.campania.capituloActual > HISTORIA.length) {
-        mostrarVictoria(jugador);
-    }
-}
-
-/* ------------------------------------------------------------
-   MARCAR JEFE COMO DERROTADO
------------------------------------------------------------- */
-
-function jefeDerrotado(jugador) {
-    jugador.derrotoJefe = true;
-    completarMision(jugador, "jefe");
-    desbloquearLogro(jugador, "jefeFinal");
-    comprobarCapitulo(jugador);
-}
+document.getElementById("popupCinematica").onclick = function () {
+    document.getElementById("popupCinematica").classList.add("oculto");
+};
