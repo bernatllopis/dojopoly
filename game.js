@@ -23,10 +23,9 @@ function ajustarCanvas() {
 
     if (tablero.complete) {
         ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
-        dibujarFicha();
+        dibujarFichas();
     }
 }
-
 
 window.addEventListener("resize", ajustarCanvas);
 
@@ -70,96 +69,38 @@ function escalar(valor) {
 }
 
 // ===============================
-// FICHA
+// FICHAS PERSONALIZADAS
 // ===============================
 
-let posicion = 1;
-let turno = 1;
+const imagenesFichas = [
+    new Image(),
+    new Image(),
+    new Image(),
+    new Image()
+];
 
-let fichaX = casillas[0].x;
-let fichaY = casillas[0].y;
-
-let velocidad = 6;
-
-function dibujarFicha() {
-    ctx.beginPath();
-    ctx.arc(escalar(fichaX), escalar(fichaY), escalar(15), 0, Math.PI * 2);
-    ctx.fillStyle = "red";
-    ctx.fill();
-}
+imagenesFichas[0].src = "ficha1.png";
+imagenesFichas[1].src = "ficha2.png";
+imagenesFichas[2].src = "ficha3.png";
+imagenesFichas[3].src = "ficha4.png";
 
 // ===============================
-// ANIMACIÓN SUAVE
+// JUGADORES
 // ===============================
 
-function moverSuave(destinoX, destinoY, callback) {
-    function animar() {
-        const dx = destinoX - fichaX;
-        const dy = destinoY - fichaY;
-        const distancia = Math.sqrt(dx*dx + dy*dy);
+let jugadores = [
+    { nombre: "Equipo 1", posicion: 1, oro: 0, plata: 0, ficha: 0 },
+    { nombre: "Equipo 2", posicion: 1, oro: 0, plata: 0, ficha: 1 },
+    { nombre: "Equipo 3", posicion: 1, oro: 0, plata: 0, ficha: 2 },
+    { nombre: "Equipo 4", posicion: 1, oro: 0, plata: 0, ficha: 3 }
+];
 
-        // SNAP final
-        if (distancia < velocidad) {
-            fichaX = destinoX;
-            fichaY = destinoY;
-
-            ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
-            dibujarFicha();
-
-            callback();
-            return;
-        }
-
-        fichaX += (dx / distancia) * velocidad;
-        fichaY += (dy / distancia) * velocidad;
-
-        ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
-        dibujarFicha();
-
-        requestAnimationFrame(animar);
-    }
-
-    animar();
-}
-
-function moverFichaPasos(pasosRestantes) {
-    if (pasosRestantes === 0) {
-        turno = turno === 1 ? 2 : 1;
-        document.getElementById("turno").textContent = "Equipo " + turno;
-        return;
-    }
-
-    posicion++;
-    if (posicion > casillas.length) posicion = 1;
-
-    const destino = casillas[posicion - 1];
-
-    moverSuave(destino.x, destino.y, () => {
-
-        // SNAP definitivo
-        fichaX = destino.x;
-        fichaY = destino.y;
-
-        ctx.drawImage(tablero, 0, 0, canvas.width, canvas.height);
-        dibujarFicha();
-
-        moverFichaPasos(pasosRestantes - 1);
-    });
-}
+let turno = 0; // índice del jugador actual
 
 // ===============================
-// BOTÓN DADO
+// DIBUJAR FICHAS
 // ===============================
 
-document.getElementById("btnDado").addEventListener("click", () => {
-    const resultado = Math.floor(Math.random() * 6) + 1;
-
-    document.getElementById("resultado").textContent = resultado;
-
-    let destino = posicion + resultado;
-    if (destino > casillas.length) destino -= casillas.length;
-
-    document.getElementById("posicion").textContent = "Casilla " + destino;
-
-    moverFichaPasos(resultado);
-});
+function dibujarFichas() {
+    jugadores.forEach(j => {
+        const casilla = casillas[j
