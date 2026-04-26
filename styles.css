@@ -1,3 +1,7 @@
+/* ============================
+   ESTILOS GENERALES
+============================ */
+
 body {
     font-family: Arial, sans-serif;
     background: #f0f0f0;
@@ -10,16 +14,35 @@ body {
     margin-bottom: 20px;
 }
 
+/* ============================
+   CONTENEDOR PRINCIPAL
+============================ */
+
 .contenedor {
     display: flex;
     justify-content: center;
+    align-items: flex-start;
     gap: 20px;
+    flex-wrap: nowrap;
 }
 
+/* ============================
+   TABLERO (CANVAS)
+============================ */
+
 #tablero {
+    width: 100%;
+    height: auto;
+    max-width: 800px;
+    display: block;
+    margin: 0 auto;
     border: 3px solid #333;
     background: white;
 }
+
+/* ============================
+   PANEL LATERAL
+============================ */
 
 .panel {
     width: 200px;
@@ -27,4 +50,20 @@ body {
     background: #ffffff;
     border: 2px solid #333;
     border-radius: 10px;
+}
+
+/* ============================
+   RESPONSIVE PARA MÓVIL
+============================ */
+
+@media (max-width: 900px) {
+    .contenedor {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .panel {
+        width: 90%;
+        max-width: 350px;
+    }
 }
